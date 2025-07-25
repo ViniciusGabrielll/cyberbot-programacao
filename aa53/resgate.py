@@ -30,6 +30,8 @@ sensorEsq.detectable_colors(myColors)
 vezesSoltar = 0
 lado = True
 trajetoTerminado = False;
+veloPadrao = 100
+saida = False
 
 # ligar componentes
 
@@ -176,6 +178,54 @@ def inicio():
         wait(2000)
         hub.ble.broadcast("none")
 
+def prataOuPreto():
+    print("PRETO OU PRATA")
+    Drive.stop()
+    wait(500)
+    if(sensorDir.color() == Prata or sensorEsq.color() == Prata):
+        prata()
+    elif(sensorDir.color() == Color.BLACK or sensorEsq.color() == Color.BLACK):
+        preto()
+
+def saidaAoLado():
+    Drive.straight(10)
+    Drive.stop()
+    wait(100)
+    if ultrasonicoLado.distance() >= 1900:
+        while ultrasonico.distance() <= 1900:
+            print("GIRANDO PARA SAIDA")
+            motorDir.dc(veloPadrao)
+            motorEsq.dc(-veloPadrao)
+        while corDir != Color.WHITE:
+            motorDir.dc(20)
+            motorEsq.dc(20)
+        Drive.stop()
+
+def prata():
+    print("PRATA")
+    Drive.straight(10)
+    Drive.straight(-50)
+    girarGraus(-90, veloPadrao)
+    Drive.straight(250)
+
+def preto():
+    global saida
+    print("VIU PRETO!!!")
+    saida = True
+
+def andar():
+    if ultrasonico.distance() <= 100:
+        motorDir.dc(-veloPadrao)
+        motorEsq.dc(-50)
+        while ultrasonico.distance() <= 50:
+            motorDir.dc(veloPadrao)
+            motorEsq.dc(-veloPadrao)
+        wait(500)
+    else:
+        motorDir.dc(veloPadrao)
+        motorEsq.dc(veloPadrao)
+
+
 inicio()
 
 
@@ -208,10 +258,11 @@ while not trajetoTerminado:
         else:
             lado = False
 
-while trajetoTerminado == True:
-        if(ultrasonico.distance() >= 1800):
-            motorDir.dc(70)
-            motorEsq.dc(70)
-        else:
-            motorDir.dc(-70)
-            motorEsq.dc(70)
+
+while not saida:
+    andar()
+    if(sensorDir.color() != Color.WHITE or sensorEsq.color() != Color.WHITE):
+        prataOuPreto()
+    if(ultrasonicoLado.distance() >= 1900):
+        saidaAoLado()
+

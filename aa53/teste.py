@@ -44,4 +44,5 @@ def girarGraus(graus, velocidade):
             motorDir.dc(-velocidade)
             motorEsq.dc(velocidade)
 
-girarGraus(-90, 100)
+while True:
+    print(sensorDir.hsv())
