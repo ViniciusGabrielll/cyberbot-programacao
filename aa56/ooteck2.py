@@ -26,7 +26,7 @@ while True:
         garra.run_time(-1000, 1000)
         ooteck2.display.number(44)
     elif hub.ble.observe(1) == "garraCima":
-        garra.run_time(1000, 500)
+        garra.run_time(1000, 1000)
         ooteck2.display.number(33)
     elif hub.ble.observe(1) == "colorSensor":
         if(frontColorSensor.color() != Color.WHITE):
@@ -34,10 +34,10 @@ while True:
         else:
             ooteck2.ble.broadcast("none")
     elif hub.ble.observe(1) == "abrirCompartimento":
-        compartimento.run_time(-500, 500)
+        compartimento.run_time(500, 500)
         ooteck2.display.number(55)
     elif hub.ble.observe(1) == "fecharCompartimento":
-        compartimento.run_time(500, 500)
+        compartimento.run_time(-500, 500)
         ooteck2.display.number(66)
     else:
         ooteck2.display.number(11)

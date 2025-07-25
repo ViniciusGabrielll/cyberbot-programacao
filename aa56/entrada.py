@@ -20,29 +20,46 @@ ultrasonico = UltrasonicSensor(Port.E)
 ultrasonicoLado = UltrasonicSensor(Port.F)
 Color.WHITE = Color(193, 11, 90) 
 Color.GREEN = Color(191, 57, 22)
-Color.BLACK = Color(200, 15, 22) 
+Color.BLACK = Color(215, 17, 80) 
 Color.GRAY = Color(195, 31, 17)
 Color.RED = Color(351, 91, 67) 
-myColors = (Color.GREEN, Color.WHITE, Color.BLACK, Color.GRAY, Color.RED)
+Prata = Color(206, 24, 78)
+myColors = (Color.GREEN, Color.WHITE, Color.BLACK, Color.GRAY, Color.RED, Prata)
 sensorDir.detectable_colors(myColors)
 sensorEsq.detectable_colors(myColors)
 
-# ligar componentes
-
-ultrasonico.lights.on()
-ultrasonicoLado.lights.on()
-tempo = StopWatch()
+cronometro = StopWatch()
 
 def girarGraus(graus, velocidade):
     hub.imu.reset_heading(0)
     if graus > 0:
-        while(hub.imu.heading() >= graus * -1 and tempo.time() < 5000):
+        while(hub.imu.heading() >= graus * -1):
             motorDir.dc(velocidade)
             motorEsq.dc(-velocidade)
     else:
-        while(hub.imu.heading() <= graus * -1 and tempo.time() < 5000):
+        while(hub.imu.heading() <= graus * -1):
             motorDir.dc(-velocidade)
             motorEsq.dc(velocidade)
 
+def andar():
+    motorDir.dc(100)
+    motorEsq.dc(100)
+
+ehAEntradaDoResgate = True
 while True:
-    print(sensorDir.hsv())
+    andar()
+    if(ultrasonicoLado.distance() < 100 and ehAEntradaDoResgate == True):
+        Drive.straight(40)
+        Drive.stop()
+        wait(50)
+        if(sensorDir.color() == Color.WHITE and sensorEsq.color() == Color.WHITE):
+            Drive.stop()
+            wait(10000000)
+            print("Resgate")
+        else:
+            Drive.straight(-40)
+            ehAEntradaDoResgate = False
+            cronometro.reset()
+
+    if not ehAEntradaDoResgate and cronometro.time() >= 3000:
+        ehAEntradaDoResgate = True
