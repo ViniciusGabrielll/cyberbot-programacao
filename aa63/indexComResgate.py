@@ -72,30 +72,26 @@ def verde():
         wait(1000)
         Drive.straight(30)
         Drive.stop()
-        if(sensorDir.reflection() <= 14):
+        if(sensorDir.reflection() <= 25):
             print("PRETO FRENTE")
             Drive.straight(30)
-            Drive.turn(-90)
+            girarGraus(-90, 100)
             Drive.stop()
-            wait(500)
             if(sensorEsq.color() == Color.WHITE):
-                print(sensorEsq.color())
                 while sensorEsq.color() == Color.WHITE:
                     mover(70)
             else:
                 print("Pode ir para esquerda")
             Drive.stop()
-        elif(sensorDir.color() == Color.WHITE):
+        else:
             print("BRANCO FRENTE")
             Drive.straight(30)
     elif(sensorEsq.color() == Color.GREEN and sensorDir.color() != Color.GREEN):
         print("esquerdo verde")
-        wait(1000)
         Drive.straight(30)
         print("andei")
-        wait(1000)
         Drive.stop()
-        if(sensorEsq.reflection() <= 14):
+        if(sensorEsq.reflection() <= 25):
             print("PRETO FRENTE")
             Drive.straight(30)
             Drive.turn(90)
