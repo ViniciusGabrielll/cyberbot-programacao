@@ -78,6 +78,7 @@ def verde():
             Drive.straight(30)
             girarGraus(-90, 100)
             Drive.stop()
+            wait(100)
             if(sensorEsq.color() == Color.WHITE):
                 while sensorEsq.color() == Color.WHITE:
                     mover(70)
@@ -95,9 +96,9 @@ def verde():
         if(sensorEsq.reflection() <= 25):
             print("PRETO FRENTE")
             Drive.straight(30)
-            Drive.turn(90)
+            girarGraus(90, 100)
             Drive.stop()
-            wait(500)
+            wait(100)
             if(sensorEsq.color() == Color.WHITE):
                 print(sensorEsq.color())
                 while sensorEsq.color() == Color.WHITE:
@@ -119,6 +120,8 @@ def curvas():
     motorDir.dc(-100)
     motorEsq.dc(-100)
     wait(150)
+    Drive.stop()
+    wait(100)
     if((sensorEsq.color() == Color.WHITE and sensorDir.color() == Color.BLACK) and sensorDir.color() != Color.GREEN):
         Drive.stop()
         print("Curva para Direita")
@@ -471,13 +474,13 @@ while True:
             if(ultrasonico.distance() <= 50):
                 obstaculo()
             elif(((sensorEsq.color() == Color.GRAY and sensorDir.color() == Color.BLACK) or (sensorDir.color() == Color.GRAY and sensorEsq.color() == Color.BLACK)) and fazerCurva == True):
-                print("CURVA")
                 motorDir.dc(100)
                 motorEsq.dc(100)
                 wait(150)
                 Drive.stop()
                 if(sensorDir.color() == Color.WHITE and sensorEsq.color() == Color.WHITE):
-                    curvas() 
+                    curvas()
+                    fazerCurva = False
                 else:
                     motorDir.dc(-100)
                     motorEsq.dc(-100)
@@ -485,7 +488,7 @@ while True:
                     fazerCurva = False
                     cronometro.reset()
             else:
-                segueLinha(5, 1, 1, 70)
+                segueLinha(7, 2, 2, 70)
             if(sensorDir.color() == Color.WHITE and sensorEsq.color() == Color.WHITE):
                 motorDir.dc(100)
                 motorEsq.dc(100)
@@ -503,7 +506,7 @@ while True:
 
             if not ehAEntradaDoResgate and cronometro.time() >= 3000:
                 ehAEntradaDoResgate = True 
-            if not fazerCurva and cronometro.time() >= 500:
+            if not fazerCurva and cronometro.time() >= 1000:
                 fazerCurva = True   
          
 
