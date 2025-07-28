@@ -10,15 +10,16 @@ sensorDir = ColorSensor(Port.D)
 sensorEsq = ColorSensor(Port.C)
 
 Color.WHITE = Color(193, 11, 90) 
-Color.GREEN = Color(180, 37, 34)
+Color.GREEN = Color(191, 57, 26)
 Color.BLACK = Color(200, 15, 22) 
 Color.GRAY = Color(195, 31, 17)
 Color.RED = Color(351, 91, 67) 
-myColors = (Color.GREEN, Color.WHITE, Color.BLACK, Color.GRAY, Color.RED)
+Prata = Color(206, 24, 78)
+myColors = (Color.GREEN, Color.WHITE, Color.BLACK, Color.GRAY, Color.RED, Prata)
 sensorDir.detectable_colors(myColors)
 sensorEsq.detectable_colors(myColors)
-
-while True: 
+i = 0
+while i < 3: 
     print("Direito: ", sensorDir.hsv())
     print("Color: ", sensorDir.color())
     print("Reflect: ", sensorDir.reflection())
@@ -28,6 +29,7 @@ while True:
     print("Reflect: ", sensorEsq.reflection())
     print("-----------------")
     wait(500)
+    i += 1
 
     # branco = esq:65/69   dir:66/71
     # verde = esq:18/19   dir:15/16

@@ -31,6 +31,7 @@ sensorDir.detectable_colors(myColors)
 sensorEsq.detectable_colors(myColors)
 
 cronometro = StopWatch()
+fazerCurva = True
 
 # ligar componentes
 
@@ -115,9 +116,10 @@ def verde():
 
 
 def curvas():
-    Drive.stop()
-    wait(100)
-    if(sensorEsq.color() == Color.WHITE and sensorDir.color() == Color.BLACK and sensorDir.color() != Color.GREEN):
+    motorDir.dc(-100)
+    motorEsq.dc(-100)
+    wait(150)
+    if((sensorEsq.color() == Color.WHITE and sensorDir.color() == Color.BLACK) and sensorDir.color() != Color.GREEN):
         Drive.stop()
         print("Curva para Direita")
         Drive.straight(40)
@@ -130,7 +132,7 @@ def curvas():
         Drive.turn(10)
         Drive.stop()
         wait(100)
-    elif(sensorDir.color() == Color.WHITE and sensorEsq.color() == Color.BLACK and sensorEsq.color() != Color.GREEN):
+    elif((sensorDir.color() == Color.WHITE and sensorEsq.color() == Color.BLACK) and sensorEsq.color() != Color.GREEN):
         print("Curva para Esquerda")
         Drive.stop()
         Drive.straight(40)
@@ -468,13 +470,25 @@ while True:
             # linha principal
             if(ultrasonico.distance() <= 50):
                 obstaculo()
-            elif((sensorEsq.color() == Color.WHITE and sensorDir.color() == Color.BLACK) or (sensorDir.color() == Color.WHITE and sensorEsq.color() == Color.BLACK)):
-                curvas() 
+            elif(((sensorEsq.color() == Color.GRAY and sensorDir.color() == Color.BLACK) or (sensorDir.color() == Color.GRAY and sensorEsq.color() == Color.BLACK)) and fazerCurva == True):
+                print("CURVA")
+                motorDir.dc(100)
+                motorEsq.dc(100)
+                wait(150)
+                Drive.stop()
+                if(sensorDir.color() == Color.WHITE and sensorEsq.color() == Color.WHITE):
+                    curvas() 
+                else:
+                    motorDir.dc(-100)
+                    motorEsq.dc(-100)
+                    wait(150)
+                    fazerCurva = False
+                    cronometro.reset()
             else:
-                segueLinha(5, 2, 2, 100)
+                segueLinha(5, 1, 1, 70)
             if(sensorDir.color() == Color.WHITE and sensorEsq.color() == Color.WHITE):
-                motorDir.dc(90)
-                motorEsq.dc(90)
+                motorDir.dc(100)
+                motorEsq.dc(100)
 
             if(ultrasonicoLado.distance() < 100 and ehAEntradaDoResgate == True):
                 Drive.straight(40)
@@ -488,4 +502,10 @@ while True:
                     cronometro.reset()
 
             if not ehAEntradaDoResgate and cronometro.time() >= 3000:
-                ehAEntradaDoResgate = True   
+                ehAEntradaDoResgate = True 
+            if not fazerCurva and cronometro.time() >= 500:
+                fazerCurva = True   
+         
+
+        
+                 
