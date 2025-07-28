@@ -56,6 +56,12 @@ def segueLinha(KP, KI, KD, velocidadeB):
 def verde():
     Drive.stop()
     print("verde")
+    Drive.stop()
+    Drive.straight(-5)
+    if(sensorDir.color() != Color.GREEN and sensorEsq.color() != Color.GREEN):
+        Drive.straight(10)
+    Drive.stop()
+    wait(100)
     if(sensorDir.color() == Color.GREEN and sensorEsq.color() == Color.GREEN):
         print("BECO SEM SAIDA")
         Drive.straight(140)
@@ -115,29 +121,27 @@ def verde():
 def curvas():
     Drive.stop()
     wait(100)
-    if((sensorEsq.reflection() >= 60 and sensorEsq.reflection() <= 75) and (sensorDir.reflection() >= 25 and sensorDir.reflection() <= 40) and sensorDir.color() != Color.GREEN):
+    if(sensorEsq.color() == Color.WHITE and sensorDir.color() == Color.BLACK and sensorDir.color() != Color.GREEN):
         Drive.stop()
-        wait(200)
         print("Curva para Direita")
         Drive.straight(40)
         hub.imu.reset_heading(0)
         while(sensorEsq.color() != Color.GRAY and hub.imu.heading() < 70):
-            motorDir.dc(-60)
-            motorEsq.dc(60)
+            motorDir.dc(-90)
+            motorEsq.dc(90)
         Drive.stop()
         Drive.straight(-30)
         Drive.turn(10)
         Drive.stop()
         wait(100)
-    elif((sensorDir.reflection() >= 60 and sensorDir.reflection() <= 75) and (sensorEsq.reflection() >= 30 and sensorEsq.reflection() <= 50) and sensorEsq.color() != Color.GREEN):
+    elif(sensorDir.color() == Color.WHITE and sensorEsq.color() == Color.BLACK and sensorEsq.color() != Color.GREEN):
         print("Curva para Esquerda")
         Drive.stop()
-        wait(200)
         Drive.straight(40)
         hub.imu.reset_heading(0)
         while(sensorDir.color() != Color.GRAY and hub.imu.heading() < 70):
-            motorDir.dc(60)
-            motorEsq.dc(-60)
+            motorDir.dc(90)
+            motorEsq.dc(-90)
         Drive.stop()
         Drive.straight(-30)
         Drive.turn(-10)
@@ -468,14 +472,13 @@ while True:
             # linha principal
             if(ultrasonico.distance() <= 50):
                 obstaculo()
-            if((sensorEsq.reflection() >= 65 and sensorEsq.reflection() <= 70) and (sensorDir.reflection() >= 25 and sensorDir.reflection() <= 30)) or \
-            ((sensorDir.reflection() >= 70 and sensorDir.reflection() <= 75) and (sensorEsq.reflection() >= 30 and sensorEsq.reflection() <= 50)):
-                curvas()
+            elif((sensorEsq.color() == Color.WHITE and sensorDir.color() == Color.BLACK) or (sensorDir.color() == Color.WHITE and sensorEsq.color() == Color.BLACK)):
+                curvas() 
             else:
-                segueLinha(5, 2, 2, 80)
+                segueLinha(5, 2, 2, 100)
             if(sensorDir.color() == Color.WHITE and sensorEsq.color() == Color.WHITE):
-                motorDir.dc(40)
-                motorEsq.dc(40)
+                motorDir.dc(90)
+                motorEsq.dc(90)
 
             if(ultrasonicoLado.distance() < 100 and ehAEntradaDoResgate == True):
                 Drive.straight(40)
