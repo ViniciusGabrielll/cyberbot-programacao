@@ -117,12 +117,12 @@ def verde():
 
 
 def curvas():
-    motorDir.dc(-100)
-    motorEsq.dc(-100)
-    wait(150)
+    while(sensorDir.color() != Color.BLACK and sensorEsq.color() != Color.BLACK):
+        motorDir.dc(-50)
+        motorEsq.dc(-50)
     Drive.stop()
     wait(100)
-    if((sensorEsq.color() == Color.WHITE and sensorDir.color() == Color.BLACK) and sensorDir.color() != Color.GREEN):
+    if(sensorDir.reflection() < sensorEsq.reflection()):
         Drive.stop()
         print("Curva para Direita")
         Drive.straight(40)
@@ -135,7 +135,7 @@ def curvas():
         Drive.turn(10)
         Drive.stop()
         wait(100)
-    elif((sensorDir.color() == Color.WHITE and sensorEsq.color() == Color.BLACK) and sensorEsq.color() != Color.GREEN):
+    else:
         print("Curva para Esquerda")
         Drive.stop()
         Drive.straight(40)
@@ -341,15 +341,17 @@ def virar():
 def inicio():
     global lado
     if(ultrasonicoLado.distance() <= 100):
-        motorDir.dc(-20)
+        girarGraus(-10, 100)
+        motorDir.dc(30)
         motorEsq.dc(100)
         wait(500)
         girarGraus(-90, 100)
         Drive.stop()
         lado = False
     else:
+        girarGraus(10, 100)
         motorDir.dc(100)
-        motorEsq.dc(-20)
+        motorEsq.dc(30)
         wait(500)
         girarGraus(90, 100)
         Drive.stop()
@@ -368,7 +370,7 @@ def prataOuPreto():
         preto()
 
 def saidaAoLado():
-    Drive.straight(10)
+    Drive.straight(20)
     Drive.stop()
     wait(100)
     if ultrasonicoLado.distance() >= 1900:
@@ -445,6 +447,8 @@ def resgate():
             else:
                 lado = False
 
+    hub.ble.broadcast("garraCima")
+    wait(1000)
 
     while not saida:
         andar()
@@ -473,10 +477,10 @@ while True:
             # linha principal
             if(ultrasonico.distance() <= 50):
                 obstaculo()
-            elif(((sensorEsq.color() == Color.GRAY and sensorDir.color() == Color.BLACK) or (sensorDir.color() == Color.GRAY and sensorEsq.color() == Color.BLACK)) and fazerCurva == True):
+            elif(((sensorEsq.color() == Color.WHITE and sensorDir.color() == Color.BLACK) or (sensorDir.color() == Color.WHITE and sensorEsq.color() == Color.BLACK)) and fazerCurva == True):
                 motorDir.dc(100)
                 motorEsq.dc(100)
-                wait(150)
+                wait(200)
                 Drive.stop()
                 if(sensorDir.color() == Color.WHITE and sensorEsq.color() == Color.WHITE):
                     curvas()
@@ -484,11 +488,11 @@ while True:
                 else:
                     motorDir.dc(-100)
                     motorEsq.dc(-100)
-                    wait(150)
+                    wait(200)
                     fazerCurva = False
                     cronometro.reset()
             else:
-                segueLinha(7, 2, 2, 70)
+                segueLinha(5, 2, 2, 70)
             if(sensorDir.color() == Color.WHITE and sensorEsq.color() == Color.WHITE):
                 motorDir.dc(100)
                 motorEsq.dc(100)
