@@ -218,7 +218,6 @@ def girarGraus(graus, velocidade):
 
 
 
-
 #    RESGATE
 
 
@@ -492,27 +491,24 @@ while True:
                     fazerCurva = False
                     cronometro.reset()
             else:
-                segueLinha(5, 2, 2, 70)
+                segueLinha(6, 3, 3, 70)
             if(sensorDir.color() == Color.WHITE and sensorEsq.color() == Color.WHITE):
                 motorDir.dc(100)
                 motorEsq.dc(100)
 
             if(ultrasonicoLado.distance() < 100 and ehAEntradaDoResgate == True):
-                Drive.straight(40)
+                Drive.straight(60)
                 Drive.stop()
                 wait(50)
                 if(sensorDir.color() == Color.WHITE and sensorEsq.color() == Color.WHITE):
                     resgate()
                 else:
-                    Drive.straight(-40)
+                    Drive.straight(-60)
                     ehAEntradaDoResgate = False
                     cronometro.reset()
 
             if not ehAEntradaDoResgate and cronometro.time() >= 3000:
                 ehAEntradaDoResgate = True 
             if not fazerCurva and cronometro.time() >= 1000:
-                fazerCurva = True   
+                fazerCurva = True
          
-
-        
-                 
