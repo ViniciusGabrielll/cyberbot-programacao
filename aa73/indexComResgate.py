@@ -57,8 +57,9 @@ def segueLinha(KP, KI, KD, velocidadeB):
 def verde():
     Drive.stop()
     print("verde")
-    Drive.stop()
-    Drive.straight(-5)
+    while (sensorDir.color() != Color.GREEN and sensorEsq.color() != Color.GREEN):
+        motorDir.dc(-40)
+        motorEsq.dc(-40)
     if(sensorDir.color() != Color.GREEN and sensorEsq.color() != Color.GREEN):
         Drive.straight(10)
     Drive.stop()
@@ -70,12 +71,13 @@ def verde():
         Drive.straight(60)
     elif(sensorDir.color() == Color.GREEN and sensorEsq.color() != Color.GREEN):
         print("direito verde")
-        wait(1000)
-        Drive.straight(30)
+        while (sensorDir.color() != Color.GREEN):
+            motorDir.dc(40)
+            motorEsq.dc(40)
         Drive.stop()
         if(sensorDir.reflection() <= 25):
             print("PRETO FRENTE")
-            Drive.straight(30)
+            Drive.straight(50)
             girarGraus(-90, 100)
             Drive.stop()
             wait(100)
@@ -90,12 +92,13 @@ def verde():
             Drive.straight(30)
     elif(sensorEsq.color() == Color.GREEN and sensorDir.color() != Color.GREEN):
         print("esquerdo verde")
-        Drive.straight(30)
-        print("andei")
+        while (sensorEsq.color() != Color.GREEN):
+            motorDir.dc(40)
+            motorEsq.dc(40)
         Drive.stop()
         if(sensorEsq.reflection() <= 25):
             print("PRETO FRENTE")
-            Drive.straight(30)
+            Drive.straight(50)
             girarGraus(90, 100)
             Drive.stop()
             wait(100)
@@ -172,7 +175,7 @@ def obstaculo():
         motorDir.dc(-50)
     Drive.stop()
 
-    girarGraus(-76, 70)
+    girarGraus(-85, 70)
     Drive.straight(50)
     while viuPreto == False:
         if(ultrasonicoLado.distance() <= 200):
@@ -337,27 +340,31 @@ def virar():
     wait(1000)
     hub.ble.broadcast("none")
 
+estaNoResgate = False
+
 def inicio():
     global lado
+    global estaNoResgate
+    estaNoResgate = True
     if(ultrasonicoLado.distance() <= 100):
-        girarGraus(-10, 100)
-        motorDir.dc(30)
+        girarGraus(-20, 100)
+        motorDir.dc(100)
         motorEsq.dc(100)
-        wait(500)
-        girarGraus(-90, 100)
+        wait(300)
+        girarGraus(-70, 100)
         Drive.stop()
         lado = False
     else:
-        girarGraus(10, 100)
+        girarGraus(20, 100)
         motorDir.dc(100)
-        motorEsq.dc(30)
-        wait(500)
-        girarGraus(90, 100)
+        motorEsq.dc(100)
+        wait(300)
+        girarGraus(70, 100)
         Drive.stop()
         lado = True
     motorDir.dc(-70)
     motorEsq.dc(-70)
-    wait(1000)
+    wait(1500)
 
 def prataOuPreto():
     print("PRETO OU PRATA")
@@ -497,12 +504,17 @@ while True:
                 motorEsq.dc(100)
 
             if(ultrasonicoLado.distance() < 100 and ehAEntradaDoResgate == True):
-                Drive.straight(60)
+                Drive.straight(20)
                 Drive.stop()
                 wait(50)
                 if(sensorDir.color() == Color.WHITE and sensorEsq.color() == Color.WHITE):
-                    resgate()
-                else:
+                    girarGraus(20, 70)
+                    if(sensorDir.color() == Color.WHITE and sensorEsq.color() == Color.WHITE):
+                        girarGraus(-40, 70)
+                        if(sensorDir.color() == Color.WHITE and sensorEsq.color() == Color.WHITE):
+                            girarGraus(20, 70)
+                            resgate()
+                if(estaNoResgate == False):
                     Drive.straight(-60)
                     ehAEntradaDoResgate = False
                     cronometro.reset()
