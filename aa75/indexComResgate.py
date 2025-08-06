@@ -38,7 +38,6 @@ fazerCurva = True
 ultrasonico.lights.on()
 ultrasonicoLado.lights.on()
 
-
 # funcoes
 
 def segueLinha(KP, KI, KD, velocidadeB):
@@ -166,30 +165,33 @@ def obstaculo():
     wait(100)
     ultrasonico.lights.on()
     wait(100)
-    Drive.straight(-40)
     while(sensorDir.color() != Color.GRAY):
-        motorDir.dc(50)
-        motorEsq.dc(-50)
+        motorDir.dc(70)
+        motorEsq.dc(-70)
     while(sensorEsq.color() != Color.GRAY):
-        motorEsq.dc(50)
-        motorDir.dc(-50)
+        motorEsq.dc(70)
+        motorDir.dc(-70)
     Drive.stop()
 
-    girarGraus(-85, 70)
-    Drive.straight(50)
+    girarGraus(-80, 100)
+    motorDir.dc(70)
+    motorEsq.dc(70)
+    wait(500)
+
     while viuPreto == False:
-        if(ultrasonicoLado.distance() <= 200):
+        if(ultrasonicoLado.distance() <= 150):
             print(ultrasonico.distance())
             motorDir.dc(50)
             motorEsq.dc(50)
         else:
             Drive.straight(50)
             hub.speaker.beep()
+            Drive.straight(10)
             girarGraus(89, 70)
-            while(ultrasonicoLado.distance() >= 200 and viuPreto == False):
+            while(ultrasonicoLado.distance() >= 150 and viuPreto == False):
                 print(ultrasonico.distance())
-                motorDir.dc(50)
-                motorEsq.dc(50)
+                motorDir.dc(70)
+                motorEsq.dc(70)
                 if(sensorEsq.color() == Color.BLACK or sensorEsq.color() == Color.GRAY):
                     viuPreto = True
                     print("Viu preto")
@@ -481,7 +483,7 @@ while True:
                 motorEsq.dc(70)
         else:
             # linha principal
-            if(ultrasonico.distance() <= 50):
+            if(ultrasonico.distance() <= 80):
                 obstaculo()
             elif(((sensorEsq.color() == Color.WHITE and sensorDir.color() == Color.BLACK) or (sensorDir.color() == Color.WHITE and sensorEsq.color() == Color.BLACK)) and fazerCurva == True):
                 motorDir.dc(100)
