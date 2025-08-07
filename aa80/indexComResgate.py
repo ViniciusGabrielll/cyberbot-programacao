@@ -59,21 +59,21 @@ def verde():
     while (sensorDir.color() != Color.GREEN and sensorEsq.color() != Color.GREEN):
         motorDir.dc(-40)
         motorEsq.dc(-40)
-    if(sensorDir.color() != Color.GREEN and sensorEsq.color() != Color.GREEN):
-        Drive.straight(10)
     Drive.stop()
-    wait(100)
+    wait(300)
     if(sensorDir.color() == Color.GREEN and sensorEsq.color() == Color.GREEN):
         print("BECO SEM SAIDA")
         Drive.straight(140)
-        Drive.turn(230)
+        girarGraus(180, 70)
         Drive.straight(60)
     elif(sensorDir.color() == Color.GREEN and sensorEsq.color() != Color.GREEN):
         print("direito verde")
-        while (sensorDir.color() != Color.GREEN):
+        while (sensorDir.color() == Color.GREEN):
             motorDir.dc(40)
             motorEsq.dc(40)
+        Drive.straight(10)
         Drive.stop()
+        wait(100)
         if(sensorDir.reflection() <= 25):
             print("PRETO FRENTE")
             Drive.straight(50)
@@ -91,10 +91,12 @@ def verde():
             Drive.straight(30)
     elif(sensorEsq.color() == Color.GREEN and sensorDir.color() != Color.GREEN):
         print("esquerdo verde")
-        while (sensorEsq.color() != Color.GREEN):
+        while (sensorEsq.color() == Color.GREEN):
             motorDir.dc(40)
             motorEsq.dc(40)
+        Drive.straight(10)
         Drive.stop()
+        wait(100)
         if(sensorEsq.reflection() <= 25):
             print("PRETO FRENTE")
             Drive.straight(50)
@@ -476,14 +478,16 @@ while True:
         # esta inclinado
         incX, incY = hub.imu.tilt()
         if(incX >= 4):
+            hub.ble.broadcast("garraBaixo")
             print("SUBINDO")
-            segueLinha(1, 0, 0, 70)
+            segueLinha(1, 0, 0, 100)
             if(sensorDir.color() == Color.WHITE and sensorEsq.color() == Color.WHITE):
                 motorDir.dc(70)
                 motorEsq.dc(70)
         else:
+            hub.ble.broadcast("garraCima")
             # linha principal
-            if(ultrasonico.distance() <= 80):
+            if(ultrasonico.distance() <= 50):
                 obstaculo()
             elif(((sensorEsq.color() == Color.WHITE and sensorDir.color() == Color.BLACK) or (sensorDir.color() == Color.WHITE and sensorEsq.color() == Color.BLACK)) and fazerCurva == True):
                 motorDir.dc(100)
