@@ -12,10 +12,12 @@ compartimento = Motor(Port.B)
 
 frontColorSensor = ColorSensor(Port.E)
 
-Color.RED = Color(350, 84, 27)
-Color.GREEN = Color(182, 86, 32)
-Color.WHITE = Color(180, 5, 19)
-Color.NONE = Color(0, 0, 0)
+Color.WHITE = Color(193, 11, 90) 
+Color.GREEN = Color(h=183, s=50, v=24)
+Color.BLACK = Color(200, 15, 22) 
+Color.GRAY = Color(195, 31, 17)
+Color.RED = Color(351, 91, 67) 
+Prata = Color(206, 24, 78)
 myColors = (Color.GREEN, Color.WHITE, Color.RED, Color.NONE)
 frontColorSensor.detectable_colors(myColors)
 

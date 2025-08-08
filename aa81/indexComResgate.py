@@ -21,7 +21,7 @@ sensorEsq = ColorSensor(Port.C)
 ultrasonico = UltrasonicSensor(Port.E)
 ultrasonicoLado = UltrasonicSensor(Port.F)
 Color.WHITE = Color(193, 11, 90) 
-Color.GREEN = Color(191, 57, 26)
+Color.GREEN = Color(h=183, s=50, v=24)
 Color.BLACK = Color(200, 15, 22) 
 Color.GRAY = Color(195, 31, 17)
 Color.RED = Color(351, 91, 67) 
@@ -55,17 +55,21 @@ def segueLinha(KP, KI, KD, velocidadeB):
 
 def verde():
     Drive.stop()
-    print("verde")
-    while (sensorDir.color() != Color.GREEN and sensorEsq.color() != Color.GREEN):
-        motorDir.dc(-40)
-        motorEsq.dc(-40)
-    Drive.stop()
-    wait(300)
+    wait(500)
     if(sensorDir.color() == Color.GREEN and sensorEsq.color() == Color.GREEN):
-        print("BECO SEM SAIDA")
-        Drive.straight(140)
-        girarGraus(180, 70)
-        Drive.straight(60)
+        while (sensorDir.color() == Color.GREEN):
+            motorDir.dc(40)
+            motorEsq.dc(40)
+        Drive.straight(10)
+        Drive.stop()
+        wait(100)
+        if(sensorEsq.reflection() <= 25):
+            print("BECO SEM SAIDA")
+            Drive.straight(80)
+            girarGraus(180, 80)
+        elif(sensorEsq.color() == Color.WHITE):
+            print("BRANCO FRENTE")
+            Drive.straight(30)
     elif(sensorDir.color() == Color.GREEN and sensorEsq.color() != Color.GREEN):
         print("direito verde")
         while (sensorDir.color() == Color.GREEN):
@@ -116,6 +120,14 @@ def verde():
         elif(sensorEsq.color() == Color.GREEN):
             Drive.straight(5)
             wait(500)
+    else:
+        Drive.straight(-10)
+        if(sensorDir.color() != Color.GREEN and sensorEsq.color() != Color.GREEN):
+            Drive.straight(20)
+            if(sensorDir.color() != Color.GREEN and sensorDir.color() != Color.GREEN):
+                return
+        else:
+            return
 
 
 
@@ -183,15 +195,14 @@ def obstaculo():
     while viuPreto == False:
         if(ultrasonicoLado.distance() <= 150):
             print(ultrasonico.distance())
-            motorDir.dc(50)
-            motorEsq.dc(50)
+            motorDir.dc(60)
+            motorEsq.dc(60)
         else:
-            Drive.straight(50)
             hub.speaker.beep()
+            Drive.straight(20)
             Drive.straight(10)
             girarGraus(89, 70)
             while(ultrasonicoLado.distance() >= 150 and viuPreto == False):
-                print(ultrasonico.distance())
                 motorDir.dc(70)
                 motorEsq.dc(70)
                 if(sensorEsq.color() == Color.BLACK or sensorEsq.color() == Color.GRAY):
@@ -205,6 +216,7 @@ def obstaculo():
 def vermelho():
     if(sensorDir.color() == Color.RED and sensorEsq.color() == Color.RED):
         Drive.stop()
+        SystemExit()
 
 # fora da mesa
 def mover(GIRO):
@@ -473,13 +485,18 @@ while True:
     if(sensorDir.color() == Color.RED and sensorEsq.color() == Color.RED):
         vermelho()
     elif(sensorDir.color() == Color.GREEN or sensorEsq.color() == Color.GREEN):
+        Drive.stop()
+        print("verde")
+        while (sensorDir.color() != Color.GREEN and sensorEsq.color() != Color.GREEN):
+            motorDir.dc(-70)
+            motorEsq.dc(-70)
+        Drive.straight(-5)
         verde()
     else:
         # esta inclinado
         incX, incY = hub.imu.tilt()
         if(incX >= 4):
             hub.ble.broadcast("garraBaixo")
-            print("SUBINDO")
             segueLinha(1, 0, 0, 100)
             if(sensorDir.color() == Color.WHITE and sensorEsq.color() == Color.WHITE):
                 motorDir.dc(70)
