@@ -15,11 +15,11 @@ motorDir = Motor(Port.A)
 motorEsq = Motor(Port.B, Direction.COUNTERCLOCKWISE)
 Drive = DriveBase(motorDir, motorEsq, wheel_diameter=30 ,axle_track=150)
 
-sensorDir = ColorSensor(Port.D)
+sensorDir = ColorSensor(Port.F)
 sensorEsq = ColorSensor(Port.C)
 
 ultrasonico = UltrasonicSensor(Port.E)
-ultrasonicoLado = UltrasonicSensor(Port.F)
+ultrasonicoLado = UltrasonicSensor(Port.D)
 Color.WHITE = Color(193, 11, 90) 
 Color.GREEN = Color(h=183, s=50, v=24)
 Color.BLACK = Color(200, 15, 22) 
@@ -81,14 +81,19 @@ def verde():
         if(sensorDir.reflection() <= 25):
             print("PRETO FRENTE")
             Drive.straight(50)
-            girarGraus(-90, 100)
+            motorDir.dc(-100)
+            motorEsq.dc(70)
+            wait(1200)
             Drive.stop()
             wait(100)
             if(sensorEsq.color() == Color.WHITE):
                 while sensorEsq.color() == Color.WHITE:
                     mover(70)
+                motorDir.dc(-100)
+                motorEsq.dc(-100)
+                wait(100)
             else:
-                print("Pode ir para esquerda")
+                print("Pode ir para direita")
             Drive.stop()
         else:
             print("BRANCO FRENTE")
@@ -104,13 +109,18 @@ def verde():
         if(sensorEsq.reflection() <= 25):
             print("PRETO FRENTE")
             Drive.straight(50)
-            girarGraus(90, 100)
+            motorDir.dc(70)
+            motorEsq.dc(-100)
+            wait(1200)
             Drive.stop()
             wait(100)
             if(sensorEsq.color() == Color.WHITE):
                 print(sensorEsq.color())
                 while sensorEsq.color() == Color.WHITE:
                     mover(-70)
+                motorDir.dc(-100)
+                motorEsq.dc(-100)
+                wait(100)
             else:
                 print("Pode ir para esquerda")
             Drive.stop()
@@ -179,15 +189,18 @@ def obstaculo():
     wait(100)
     ultrasonico.lights.on()
     wait(100)
+    Drive.straight(-20)
     while(sensorDir.color() != Color.GRAY):
         motorDir.dc(70)
         motorEsq.dc(-70)
     while(sensorEsq.color() != Color.GRAY):
         motorEsq.dc(70)
         motorDir.dc(-70)
+    while(sensorDir.color() != Color.GRAY):
+        motorDir.dc(70)
+        motorEsq.dc(-70)
     Drive.stop()
-
-    girarGraus(-80, 100)
+    girarGraus(-70, 100)
     motorDir.dc(70)
     motorEsq.dc(70)
     wait(500)
@@ -200,8 +213,7 @@ def obstaculo():
         else:
             hub.speaker.beep()
             Drive.straight(20)
-            Drive.straight(10)
-            girarGraus(89, 70)
+            girarGraus(90, 70)
             while(ultrasonicoLado.distance() >= 150 and viuPreto == False):
                 motorDir.dc(70)
                 motorEsq.dc(70)
@@ -209,7 +221,10 @@ def obstaculo():
                     viuPreto = True
                     print("Viu preto")
                     Drive.straight(60)
-                    girarGraus(-80, 70)
+                    
+                    while sensorDir.color() != Color.GRAY:
+                        motorDir.dc(-100)
+                        motorEsq.dc(100)
                     Drive.straight(-50)
     print("Acabou")
 
@@ -285,6 +300,7 @@ def soltar():
     wait(1000)
     hub.ble.broadcast("fecharCompartimento")
     wait(1000)
+    hub.ble.broadcast("none")
     Drive.straight(200)
     if(vezesSoltar >= 3):
         trajetoTerminado = True
@@ -302,16 +318,20 @@ def virar():
     Drive.stop()
     hub.ble.broadcast("garraCima")
     wait(1000)
-    Drive.stop()
     hub.ble.broadcast("none")
+    Drive.stop()
     Drive.straight(200)
     Drive.stop()
-    Drive.straight(-25)
+    Drive.straight(-5)
     
     # 1
     Drive.stop()
     hub.ble.broadcast("colorSensor")
     Drive.stop()
+    if(ooteck2.ble.observe(2) == "frente"):
+        motorDir.dc(50)
+        motorEsq.dc(50)
+        wait(100)
     if(ooteck2.ble.observe(2) == "soltar"):
         soltar() 
         return
@@ -338,14 +358,15 @@ def virar():
     if(ooteck2.ble.observe(2) == "soltar"):
         soltar() 
         return
+    hub.ble.broadcast("none")
     wait(500)
+
     # finish
 
     motorDir.dc(70)
     motorEsq.dc(-70)
     wait(150)
     Drive.straight(-20)
-    hub.ble.broadcast("none")
     Drive.stop()
     girarGraus(180, veloPadrao)
     Drive.stop()
@@ -407,10 +428,12 @@ def saidaAoLado():
 
 def prata():
     print("PRATA")
-    Drive.straight(10)
     Drive.straight(-50)
     girarGraus(-90, veloPadrao)
-    Drive.straight(250)
+    if(ultrasonico.distance() > 100):
+        Drive.straight(250)
+    else:
+        girarGraus(-90, veloPadrao)
 
 def preto():
     global saida
@@ -432,6 +455,7 @@ def andar():
 def saidaNoTrajeto():
     hub.ble.broadcast("garraCima")
     wait(1000)
+    hub.ble.broadcast("none")
     girarGraus(200, 100)
     hub.ble.broadcast("garraBaixo")
     wait(1000)
@@ -440,8 +464,10 @@ def resgate():
     global lado
     inicio()
     while not trajetoTerminado:
+        
         hub.ble.broadcast("garraBaixo")
         wait(1000)
+        hub.ble.broadcast("none")
         Drive.stop()
         
         if(sensorDir.color() == Prata or sensorEsq.color() == Prata or sensorDir.color() == Color.BLACK or sensorEsq.color() == Color.BLACK):
@@ -456,8 +482,8 @@ def resgate():
             Drive.straight(70)
             Drive.straight(-50)
             if(lado == False):
-                motorDir.dc(veloPadrao)
-                motorEsq.dc(60)
+                motorDir.dc(60)
+                motorEsq.dc(veloPadrao)
                 wait(1000)
             else:
                 motorDir.dc(veloPadrao)
@@ -471,13 +497,17 @@ def resgate():
 
     hub.ble.broadcast("garraCima")
     wait(1000)
+    hub.ble.broadcast("none")
 
     while not saida:
         andar()
-        if(sensorDir.color() != Color.WHITE or sensorEsq.color() != Color.WHITE):
-            prataOuPreto()
         if(ultrasonicoLado.distance() >= 1900):
             saidaAoLado()
+        if(sensorDir.color() != Color.WHITE or sensorEsq.color() != Color.WHITE):
+            prataOuPreto()
+    return
+
+        
 
 
 # linha de repeticao
@@ -496,17 +526,21 @@ while True:
         # esta inclinado
         incX, incY = hub.imu.tilt()
         if(incX >= 4):
-            hub.ble.broadcast("garraBaixo")
+            if(ooteck2.ble.observe(2) != "garraBaixo"):
+                hub.ble.broadcast("garraBaixo")
             segueLinha(1, 0, 0, 100)
             if(sensorDir.color() == Color.WHITE and sensorEsq.color() == Color.WHITE):
                 motorDir.dc(70)
                 motorEsq.dc(70)
         else:
-            hub.ble.broadcast("garraCima")
+            if(ooteck2.ble.observe(2) != "garraCima"):
+                Drive.stop()
+                hub.ble.broadcast("garraCima")
+                wait(1000)
             # linha principal
             if(ultrasonico.distance() <= 50):
                 obstaculo()
-            elif(((sensorEsq.color() == Color.WHITE and sensorDir.color() == Color.BLACK) or (sensorDir.color() == Color.WHITE and sensorEsq.color() == Color.BLACK)) and fazerCurva == True):
+            elif((((sensorEsq.color() == Color.WHITE or sensorEsq.color() == Color.GRAY) and sensorDir.color() == Color.BLACK) or ((sensorDir.color() == Color.WHITE or sensorDir.color() == Color.GRAY) and sensorEsq.color() == Color.BLACK)) and fazerCurva == True):
                 motorDir.dc(100)
                 motorEsq.dc(100)
                 wait(200)
@@ -546,4 +580,3 @@ while True:
                 ehAEntradaDoResgate = True 
             if not fazerCurva and cronometro.time() >= 1000:
                 fazerCurva = True
-         
