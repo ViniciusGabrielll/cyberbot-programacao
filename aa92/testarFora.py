@@ -25,8 +25,9 @@ Color.GREEN = Color(h=183, s=50, v=24)
 Color.BLACK = Color(200, 15, 22) 
 Color.GRAY = Color(195, 31, 17)
 Color.RED = Color(351, 91, 67) 
-Prata = Color(206, 24, 78)
-myColors = (Color.GREEN, Color.WHITE, Color.BLACK, Color.GRAY, Color.RED, Prata)
+Color.PRATA = Color(h=200, s=20, v=52)
+Color.PRATAFALSO = Color(h=195, s=7, v=57)
+myColors = (Color.GREEN, Color.WHITE, Color.BLACK, Color.GRAY, Color.RED, Color.PRATA, Color.PRATAFALSO)
 sensorDir.detectable_colors(myColors)
 sensorEsq.detectable_colors(myColors)
 
@@ -40,6 +41,7 @@ while True:
     print("Color: ", sensorEsq.color())
     print("Reflect: ", sensorEsq.reflection())
     print("-----------------")
+    print("Ultrasonica Lado: ", ultrasonicoLado.distance())
     wait(500)
 
     # branco = esq:65/69   dir:66/71

@@ -7,10 +7,10 @@ from pybricks.tools import wait, StopWatch
 ooteck2 = InventorHub(broadcast_channel=2)
 hub = InventorHub(observe_channels=[1])
 
-garra = Motor(Port.D)
-compartimento = Motor(Port.B)
+garra = Motor(Port.B)
+compartimento = Motor(Port.D)
 
-frontColorSensor = ColorSensor(Port.C)
+frontColorSensor = ColorSensor(Port.A)
 
 Color.WHITE = Color(193, 11, 90) 
 Color.GREEN = Color(h=183, s=50, v=24)
