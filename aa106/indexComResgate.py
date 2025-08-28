@@ -22,7 +22,7 @@ ultrasonico = UltrasonicSensor(Port.E)
 ultrasonicoLado = UltrasonicSensor(Port.D)
 
 Color.WHITE = Color(193, 11, 90) 
-Color.GREEN = Color(h=183, s=50, v=24)
+Color.GREEN = Color(h=169, s=78, v=36)
 Color.BLACK = Color(200, 15, 22) 
 Color.GRAY = Color(195, 31, 17)
 Color.RED = Color(351, 91, 67) 
@@ -167,7 +167,8 @@ def curvas():
         print("Curva para Direita")
         Drive.straight(40)
         hub.imu.reset_heading(0)
-        while(sensorEsq.color() != Color.GRAY and hub.imu.heading() < 70):
+        timer = StopWatch()
+        while(sensorEsq.color() != Color.GRAY and hub.imu.heading() < 70 and timer.time() < 1000):
             motorDir.dc(-90)
             motorEsq.dc(90)
         Drive.stop()
@@ -215,7 +216,7 @@ def obstaculo():
         motorEsq.dc(-70)
     Drive.stop()
     hub.imu.reset_heading(0)
-    while ultrasonicoLado.distance() > 70 and hub.imu.heading() < 90:
+    while ultrasonicoLado.distance() > 60 and hub.imu.heading() < 120:
         mover(-100)
     motorDir.dc(70)
     motorEsq.dc(70)
@@ -238,10 +239,17 @@ def obstaculo():
                     print("Viu preto")
                     Drive.straight(60)
                     
-                    while sensorDir.color() != Color.GRAY:
+                    timer = StopWatch()
+                    timer.reset()
+                    while sensorDir.color() != Color.GRAY and timer.time() < 1500:
                         motorDir.dc(-100)
                         motorEsq.dc(100)
-                    Drive.straight(-30)
+                    if(sensorDir.color() != Color.GRAY and sensorDir.color() != Color.BLACK and sensorEsq.color() != Color.BLACK and sensorEsq.color() != Color.GRAY):
+                        timer.reset()
+                        while sensorEsq.color() != Color.GRAY:
+                            motorDir.dc(100)
+                            motorEsq.dc(-100)
+                    Drive.straight(-20)
     print("Acabou")
 
 def vermelho():
@@ -285,7 +293,7 @@ def soltar():
     
     motorDir.dc(-100)
     motorEsq.dc(-100)
-    wait(250)
+    wait(550)
     motorDir.dc(100)
     motorEsq.dc(100)
     wait(50)
@@ -510,9 +518,9 @@ def resgate():
         Drive.stop()
         if(ultrasonico.distance() >= 220 and lado == False):
             motorDir.dc(100)
-            motorEsq.dc(90)
+            motorEsq.dc(85)
         elif(ultrasonico.distance() >= 220 and lado == True):
-            motorDir.dc(90)
+            motorDir.dc(85)
             motorEsq.dc(100)  
         else:
             motorDir.dc(100)
@@ -521,14 +529,14 @@ def resgate():
             motorDir.dc(-100)
             motorEsq.dc(-100)
             wait(70)
-            Drive.straight(-50)
+            Drive.straight(-60)
             if(lado == False):
-                motorDir.dc(60)
+                motorDir.dc(50)
                 motorEsq.dc(100)
                 wait(1500)
             else:
                 motorDir.dc(100)
-                motorEsq.dc(60)
+                motorEsq.dc(50)
                 wait(1500)
             virar()
             if lado == False: 
@@ -570,9 +578,7 @@ while True:
         # esta inclinado
         incX, incY = hub.imu.tilt()
         if(incX >= 10):
-            if(ooteck2.ble.observe(2) != "garraBaixo"):
-                hub.ble.broadcast("garraBaixo")
-            segueLinha(0.5, 0, 0, 100)
+            segueLinha(2, 0.5, 0.5, 70)
             if(sensorDir.color() == Color.WHITE and sensorEsq.color() == Color.WHITE):
                 motorDir.dc(70)
                 motorEsq.dc(70)
@@ -598,7 +604,7 @@ while True:
                     fazerCurva = False
                     cronometro.reset()
             else:
-                segueLinha(4, 3, 3, 70)
+                segueLinha(4, 3, 3, 60)
             if(sensorDir.color() == Color.WHITE and sensorEsq.color() == Color.WHITE):
                 motorDir.dc(100)
                 motorEsq.dc(100)
